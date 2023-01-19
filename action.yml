@@ -1,0 +1,20 @@
+name: 'PlatformIO Dependabot'
+description: 'a Dependabot like script for PlatformIO'
+inputs:
+  github_repo_path:
+    description: 'Github Repo Path'
+    required: true
+  github_token:
+    description: 'Github Token'
+    required: true
+  assignee:
+    description: 'Who to assign the pull request'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.github_repo_path }}
+    - ${{ inputs.github_token }}
+    - ${{ inputs.assignee }}
+  entrypoint: "/app/entrypoint.sh"

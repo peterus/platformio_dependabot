@@ -1,0 +1,3 @@
+platformio
+PyGithub
+GitPython
