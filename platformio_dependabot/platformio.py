@@ -1,0 +1,37 @@
+
+from pathlib import Path
+from dataclasses import dataclass
+from typing import List
+
+from platformio.package.commands.outdated import fetch_outdated_candidates
+
+
+@dataclass(eq=True, frozen=True)
+class PackageDefinition:
+    name: str
+    currentVersion: str
+    latestVersion: str
+
+
+def get_outdated_libraries(project_path: Path) -> List[PackageDefinition]:
+    candidates = fetch_outdated_candidates(project_path, [])
+
+    packages: List[PackageDefinition] = []
+    for candidate in candidates:
+        packages.append(PackageDefinition(candidate.pkg.metadata.name,
+                        candidate.outdated.wanted, candidate.outdated.latest))
+
+    def remove_duplicates(duplicate_list: List[PackageDefinition]) -> List[PackageDefinition]:
+        return list(set(duplicate_list))
+
+    return remove_duplicates(packages)
+
+
+def update_ini_file(iniFile: Path, package: PackageDefinition) -> None:
+    data = ""
+    with open(iniFile, "rt") as f:
+        data = f.read()
+        data = data.replace(f"{package.name} @ {package.currentVersion}",
+                            f"{package.name} @ {package.latestVersion}")
+    with open(iniFile, "wt") as f:
+        f.write(data)
