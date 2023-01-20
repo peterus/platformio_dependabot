@@ -1,3 +1,4 @@
 platformio
 PyGithub
 GitPython
+colorlog
