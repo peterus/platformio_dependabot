@@ -37,7 +37,7 @@ class ArgumentParser:
         self.parser = argparse.ArgumentParser()
 
         self.parser.add_argument('--project_path', required=False, default=".")
-        self.parser.add_argument('--github_repo_path', required=True)
+        self.parser.add_argument('--github_repo_path', required=False, default=None)
         self.parser.add_argument('--github_token', required=False, default=None)
         self.parser.add_argument('--assignee', required=False, default=None)
 
