@@ -64,7 +64,7 @@ class ArgumentParser:
             die("Must set Github Token")
 
         assignee = os.environ.get('INPUT_ASSIGNEE', None)
-        if args.assignee:
+        if self.args.assignee:
             assignee = self.args.assignee
 
         return Configuration(project_path, platformio_ini, github_repo_path, github_token, assignee)
