@@ -25,6 +25,7 @@ def main():
         logger.info(f"Updating '{package.name}' to {package.latestVersion} ...")
 
         branch_name = f"platformio_dependabot/{package.name}/{package.latestVersion}"
+        branch_name = branch_name.replace(" ", "_")
 
         github_repo = Github(config.github_token).get_repo(config.github_repo_path)
 
