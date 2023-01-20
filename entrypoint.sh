@@ -3,4 +3,5 @@
 echo $@
 printenv
 
-#python3 -m /app/platformio_dependabot $@
+export PYTHONPATH=$PYTHONPATH:/app
+python3 -m platformio_dependabot
