@@ -7,13 +7,16 @@ from github import Github
 from platformio_dependabot import logger, argp
 from platformio_dependabot.argparser import Configuration
 from platformio_dependabot.mygit import add_file_commit_and_push, checkout_base_branch, create_branch, create_pull_request, is_branch_existing_on_github
-from platformio_dependabot.platformio import get_outdated_libraries, update_ini_file
+from platformio_dependabot.platformio import get_outdated_libraries, install_libraries, update_ini_file
 from platformio_dependabot.time import print_execution_time
 
 
 def main():
     config: Configuration = argp.parse_args(sys.argv[1:])
     atexit.register(print_execution_time)
+
+    logger.info("Installing PlatformIO Libraries...")
+    install_libraries(config.project_path)
 
     logger.info("getting data from PlatformIO, this will take a while...")
     packages = get_outdated_libraries(config.project_path)

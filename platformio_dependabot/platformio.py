@@ -4,6 +4,14 @@ from dataclasses import dataclass
 from typing import List
 
 from platformio.package.commands.outdated import fetch_outdated_candidates
+from platformio.package.commands.install import install_project_dependencies
+
+
+def install_libraries(project_dir):
+    options = {}
+    options["environments"] = []
+    options["project_dir"] = project_dir
+    install_project_dependencies(options)
 
 
 @dataclass(eq=True, frozen=True)
