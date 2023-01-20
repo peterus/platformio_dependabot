@@ -45,27 +45,26 @@ class ArgumentParser:
         from . import die
         self.args = self.parser.parse_args(args)
 
-        config = Configuration()
-        config.project_path = Path(self.args.project_path)
-        self._check_dir(config.project_path)
+        project_path = Path(self.args.project_path)
+        self._check_dir(project_path)
 
-        config.platformio_ini = config.project_path / "platformio.ini"
-        self._check_file(config.platformio_ini)
+        platformio_ini = project_path / "platformio.ini"
+        self._check_file(platformio_ini)
 
-        config.github_repo_path = os.environ.get('GITHUB_REPOSITORY', None)
+        github_repo_path = os.environ.get('GITHUB_REPOSITORY', None)
         if self.args.github_repo_path:
-            config.github_repo_path = self.args.github_repo_path
-        if config.github_repo_path == None:
+            github_repo_path = self.args.github_repo_path
+        if github_repo_path == None:
             die("Must set Github Repository")
 
-        config.github_token = os.environ.get('INPUT_GITHUB_TOKEN', None)
+        github_token = os.environ.get('INPUT_GITHUB_TOKEN', None)
         if self.args.github_token:
-            config.github_token = self.args.github_token
-        if config.github_token == None:
+            github_token = self.args.github_token
+        if github_token == None:
             die("Must set Github Token")
 
-        config.assignee = os.environ.get('INPUT_ASSIGNEE', None)
-        if self.args.assignee:
-            config.assignee = self.args.assignee
+        assignee = os.environ.get('INPUT_ASSIGNEE', None)
+        if args.assignee:
+            assignee = self.args.assignee
 
-        return config
+        return Configuration(project_path, platformio_ini, github_repo_path, github_token, assignee)
