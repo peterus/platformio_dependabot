@@ -38,8 +38,8 @@ def main():
         update_ini_file(config.platformio_ini, package)
 
         add_file_commit_and_push(repo, branch_name, config.platformio_ini, package)
-        checkout_base_branch(repo)
-        create_pull_request(repo, github_repo, branch_name, package, config.assignee)
+        checkout_base_branch(repo, github_repo)
+        create_pull_request(github_repo, branch_name, package, config.assignee)
 
 
 if __name__ == '__main__':
