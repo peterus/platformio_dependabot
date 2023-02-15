@@ -35,8 +35,8 @@ def checkout_base_branch(repo: Repo, github_repo: Any):
 
 
 def create_pull_request(github_repo: Any, branch_name: str, package: PackageDefinition, assignee: Optional[str]):
-    body = f"Bump {package.name} to {package.latestVersion}"
-    pr = github_repo.create_pull(title=f"Bump {package.name} to {package.latestVersion}",
+    body = f"Bump {package.name} from {package.currentVersion} to {package.latestVersion}"
+    pr = github_repo.create_pull(title=body,
                                  body=body, head=branch_name, base=get_base_branch(github_repo))
     if assignee:
         pr.edit(assignee=assignee)
