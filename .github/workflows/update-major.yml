@@ -6,8 +6,7 @@ on:
       - "v*"
 
 jobs:
-
-movetag:
+  movetag:
     runs-on: ubuntu-latest
 
     steps:
