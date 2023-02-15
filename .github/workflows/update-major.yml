@@ -29,7 +29,6 @@ jobs:
 
     - name: Update the ${{ env.TAG_NAME }} tag
       id: update-major-tag
-      uses: ./
+      uses: actions/publish-action@main
       with:
         source-tag: ${{ env.TAG_NAME }}
-        slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
