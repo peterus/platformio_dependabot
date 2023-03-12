@@ -13,8 +13,8 @@ name: PlatformIO Dependabot
 on:
   workflow_dispatch:
   schedule:
-    # Runs every Saturday at 00:00
-    - cron: '0 0 * * 6'
+    # Runs every day at 00:00
+    - cron: '0 0 * * *'
 
 jobs:
   dependabot:
@@ -29,4 +29,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-Every Saturday at 00:00 this action will be triggered. With the `workflow_dispatch` option enabled, you can also manually trigger the action.
+Every day at 00:00 this action will be triggered. With the `workflow_dispatch` option enabled, you can also manually trigger the action.
