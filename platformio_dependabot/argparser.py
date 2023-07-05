@@ -36,7 +36,7 @@ class ArgumentParser:
     def _init_argparse(self):
         self.parser = argparse.ArgumentParser()
 
-        self.parser.add_argument('--project_path', required=False, default=".")
+        self.parser.add_argument('--project_path', required=False, default=None)
         self.parser.add_argument('--github_repo_path', required=False, default=None)
         self.parser.add_argument('--github_token', required=False, default=None)
         self.parser.add_argument('--assignee', required=False, default=None)
@@ -45,9 +45,9 @@ class ArgumentParser:
         from . import die
         self.args = self.parser.parse_args(args)
 
-        project_path = os.environ.get('INPUT_PROJECT_PATH', None)
+        project_path = Path(os.environ.get('INPUT_PROJECT_PATH', "."))
         if self.args.project_path:
-            project_path = self.args.project_path
+            project_path = Path(self.args.project_path)
         self._check_dir(project_path)
 
         platformio_ini = project_path / "platformio.ini"
