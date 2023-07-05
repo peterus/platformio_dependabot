@@ -7,10 +7,14 @@ inputs:
   assignee:
     description: 'Who to assign the pull request'
     required: false
+  project_path:
+    description: 'Path to PlatformIO Project. Default: current root dir'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - ${{ inputs.github_token }}
     - ${{ inputs.assignee }}
+    - ${{ inputs.project_path }}
   entrypoint: "/app/entrypoint.sh"

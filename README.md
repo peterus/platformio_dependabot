@@ -3,15 +3,23 @@
 This Github action is some kind of Dependabot for PlatformIO.
 It will help to stay on the current platform and library releases.
 
-## example action for your project
+## Inputs
 
-Copy this yml text into this file of your github project: `.github/workflows/dependabot.yml`
+| Variable      | Description                             | Type                                     | Required |
+| ------------- | --------------------------------------- | ---------------------------------------- |--------- |
+| github_token  | Github Token to create the MR           | Secure String                            | Yes      |
+| assignee      | MR will be assigned to this Github user | User String                              | No       |
+| project_path  | Path to platformio.ini file (default will be root folder) | Path inside repository | No       |
+
+## Example Usage
+
+Use this example in your project: `.github/workflows/dependabot.yml`
 
 ```
 name: PlatformIO Dependabot
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # option to manually trigger the workflow
   schedule:
     # Runs every day at 00:00
     - cron: '0 0 * * *'
@@ -28,5 +36,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
-
-Every day at 00:00 this action will be triggered. With the `workflow_dispatch` option enabled, you can also manually trigger the action.

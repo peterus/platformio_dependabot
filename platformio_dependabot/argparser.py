@@ -45,7 +45,9 @@ class ArgumentParser:
         from . import die
         self.args = self.parser.parse_args(args)
 
-        project_path = Path(self.args.project_path)
+        project_path = os.environ.get('INPUT_PROJECT_PATH', None)
+        if self.args.project_path:
+            project_path = self.args.project_path
         self._check_dir(project_path)
 
         platformio_ini = project_path / "platformio.ini"
