@@ -3,6 +3,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List
 
+from platformio import fs
 from platformio.package.commands.outdated import fetch_outdated_candidates
 from platformio.package.commands.install import install_project_dependencies
 
