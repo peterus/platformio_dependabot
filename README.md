@@ -1,6 +1,6 @@
 # PlatformIO Dependabot
 
-This Github action is some kind of Dependabot for PlatformIO.
+This Github action is some kind of Dependabot for [PlatformIO](https://github.com/platformio/platformio-core).
 It will help to stay on the current platform and library releases.
 
 ## Inputs
