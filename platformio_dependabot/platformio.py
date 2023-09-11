@@ -22,7 +22,8 @@ class PackageDefinition:
 
 
 def get_outdated_libraries(project_path: Path) -> List[PackageDefinition]:
-    candidates = fetch_outdated_candidates(project_path, [])
+    with fs.cd(project_dir):
+        candidates = fetch_outdated_candidates([])
 
     packages: List[PackageDefinition] = []
     for candidate in candidates:
