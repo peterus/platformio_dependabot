@@ -3,6 +3,7 @@ import sys
 
 from git import Repo
 from github import Github
+from pathlib import Path
 
 from platformio_dependabot import logger, argp
 from platformio_dependabot.argparser import Configuration
@@ -33,7 +34,7 @@ def main():
             logger.warning("Pull Request already existing, will do nothing.")
             continue
 
-        repo = Repo(config.project_path)
+        repo = Repo(Path("/github/workspace"))
         create_branch(repo, branch_name)
 
         update_ini_file(config.platformio_ini, package)
