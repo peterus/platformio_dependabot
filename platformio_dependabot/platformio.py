@@ -43,7 +43,7 @@ def update_ini_file(iniFile: Path, package: PackageDefinition) -> bool:
     updated = False
     data = ""
 
-    matches = re.search(r"^\s*([\^~<>=]*)\s*(.+)$", package.requirements)
+    matches = re.search(r"^\s*([\^~<>=]*)\s*(.+)\s*$", package.requirements)
     operator = matches.group(1);
     requiredVersion = matches.group(2)
 
@@ -53,7 +53,7 @@ def update_ini_file(iniFile: Path, package: PackageDefinition) -> bool:
 
     with open(iniFile, "rt") as f:
         data = f.read()
-        matches = re.findall(rf"({eName}(\s*)@(\s*){eOperator}(\s*)?{eRequiredVersion})", data)
+        matches = re.findall(rf"({eName}(\s*)@(\s*){eOperator}(\s*){eRequiredVersion})", data)
 
         for matched, space1, space2, space3 in matches:
             updated = True
