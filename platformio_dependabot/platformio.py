@@ -44,7 +44,7 @@ def update_ini_file(iniFile: Path, package: PackageDefinition) -> bool:
     data = ""
 
     matches = re.search(r"^\s*([\^~<>=]*)\s*(.+)\s*$", package.requirements)
-    operator = matches.group(1);
+    operator = matches.group(1)
     requiredVersion = matches.group(2)
 
     eName = re.escape(f"{package.name}")
