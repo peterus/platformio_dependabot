@@ -23,7 +23,7 @@ def main():
     packages = get_outdated_libraries(config.project_path)
 
     for package in packages:
-        logger.info(f"Updating '{package.name}' to {package.latestVersion} ...")
+        logger.info(f"Updating '{package.name}@{package.requirements}' from {package.currentVersion} to {package.latestVersion} ...")
 
         branch_name = f"platformio_dependabot/{package.name}/{package.latestVersion}"
         branch_name = branch_name.replace(" ", "_")
@@ -34,10 +34,12 @@ def main():
             logger.warning("Pull Request already existing, will do nothing.")
             continue
 
+        if update_ini_file(config.platformio_ini, package) == False:
+            logger.warning("No matching string to replace, will do nothing.")
+            continue
+
         repo = Repo(Path("/github/workspace"))
         create_branch(repo, branch_name)
-
-        update_ini_file(config.platformio_ini, package)
 
         add_file_commit_and_push(repo, branch_name, config.platformio_ini, package)
         checkout_base_branch(repo, github_repo)
