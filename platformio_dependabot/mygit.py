@@ -39,4 +39,4 @@ def create_pull_request(github_repo: Any, branch_name: str, package: PackageDefi
     pr = github_repo.create_pull(title=body,
                                  body=body, head=branch_name, base=get_base_branch(github_repo))
     if assignee:
-        pr.edit(assignee=assignee)
+        pr.add_to_assignees(assignee)
