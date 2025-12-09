@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.13
 
 COPY requirements.txt /app/requirements.txt
 RUN pip3 install -r /app/requirements.txt
