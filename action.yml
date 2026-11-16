@@ -10,6 +10,9 @@ inputs:
   project_path:
     description: 'Path to the PlatformIO project (directory containing platformio.ini), relative to the repository root. Default: repository root'
     required: false
+  base_branch:
+    description: 'Branch the updates are based on and the pull requests are opened against. Default: the default branch of the repository'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
