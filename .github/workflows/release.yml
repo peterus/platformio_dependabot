@@ -1,0 +1,69 @@
+name: Release new action version
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+    inputs:
+      TAG_NAME:
+        description: 'Tag name to publish (image tag) and that the major tag will point to'
+        required: true
+
+env:
+  TAG_NAME: ${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }}
+  IMAGE: ghcr.io/peterus/platformio_dependabot
+
+jobs:
+  publish_image:
+    name: Publish Docker image ${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }}
+    # Remember to configure the releaseNewActionVersion environment with required approvers in the repository settings
+    environment:
+      name: releaseNewActionVersion
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ env.TAG_NAME }}
+
+    - name: Check that action.yml uses the image of this release
+      run: |
+        expected="  image: 'docker://${IMAGE}:${TAG_NAME}'"
+        if ! grep -qxF "$expected" action.yml; then
+          echo "::error file=action.yml::action.yml must contain \"${expected}\" (see RELEASING.md)"
+          exit 1
+        fi
+
+    - uses: docker/setup-buildx-action@v4
+
+    - uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: docker/build-push-action@v7
+      with:
+        context: .
+        push: true
+        tags: ${{ env.IMAGE }}:${{ env.TAG_NAME }}
+
+  update_tag:
+    name: Update the major tag to include the ${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }} changes
+    # only move the major tag once the image exists, otherwise @v1 users would pull a missing image
+    needs: publish_image
+    environment:
+      name: releaseNewActionVersion
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Update the ${{ env.TAG_NAME }} tag
+      id: update-major-tag
+      uses: actions/publish-action@23f4c6f12633a2da8f44938b71fde9afec138fb4 # v0.4.0
+      with:
+        source-tag: ${{ env.TAG_NAME }}

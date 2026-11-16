@@ -3,6 +3,9 @@
 This Github action is some kind of Dependabot for [PlatformIO](https://github.com/platformio/platformio-core).
 It will help to stay on the current platform and library releases.
 
+The action runs a prebuilt Docker image from the GitHub Container Registry, so no image has to be
+built on every run.
+
 ## Inputs
 
 | Variable      | Description                             | Type                                     | Required |
