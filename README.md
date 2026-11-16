@@ -9,7 +9,7 @@ It will help to stay on the current platform and library releases.
 | ------------- | --------------------------------------- | ---------------------------------------- |--------- |
 | github_token  | Github Token to create the MR           | Secure String                            | Yes      |
 | assignee      | MR will be assigned to this Github user | User String                              | No       |
-| project_path  | Path to platformio.ini file (default will be root folder) | Path inside repository | No       |
+| project_path  | Directory containing `platformio.ini`, relative to the repository root (default: repository root) | Path inside repository | No       |
 
 ## Example Usage
 
@@ -24,15 +24,37 @@ on:
     # Runs every day at 00:00
     - cron: '0 0 * * *'
 
+permissions:
+  contents: write       # push the update branches
+  pull-requests: write  # open the pull requests
+
 jobs:
   dependabot:
     runs-on: ubuntu-latest
     name: run PlatformIO Dependabot
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: run PlatformIO Dependabot
         uses: peterus/platformio_dependabot@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # project_path: firmware   # if platformio.ini is not in the repository root
 ```
+
+## Repository settings
+
+* Pull requests are opened against the repository's **default branch**.
+* Under *Settings → Actions → General → Workflow permissions* enable
+  **"Allow GitHub Actions to create and approve pull requests"**. Without it the branch is pushed,
+  but opening the pull request fails.
+* Pull requests created with the default `GITHUB_TOKEN` do **not** trigger other workflows
+  (e.g. your CI build). If you want CI to run on them, pass a fine-grained personal access token
+  (or a GitHub App token) with *Contents* and *Pull requests* write access as `github_token` instead.
+
+## Behaviour
+
+* For every outdated library or platform a branch `platformio_dependabot/<name>/<version>` is pushed
+  and a pull request is opened. If that branch already exists, the package is skipped.
+* If updating a single package fails, the remaining packages are still processed and the
+  workflow run fails at the end.
