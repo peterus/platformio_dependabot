@@ -1,4 +1,4 @@
-platformio
-PyGithub
-GitPython
-colorlog
+platformio==6.2.0
+PyGithub==2.10.0
+GitPython==3.2.1
+colorlog==6.12.0

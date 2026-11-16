@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - run: pip install -r requirements.txt pytest
+      - run: python -m pytest -v tests
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker build -t platformio_dependabot .
+      - name: Smoke test (PlatformIO internal APIs still importable)
+        run: docker run --rm --entrypoint python3 -e PYTHONPATH=/app platformio_dependabot -c "import platformio_dependabot.__main__, platformio_dependabot.platformio"
