@@ -12,7 +12,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
@@ -22,7 +22,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: docker build -t platformio_dependabot .
       - name: Smoke test (PlatformIO internal APIs still importable)
         run: docker run --rm --entrypoint python3 -e PYTHONPATH=/app platformio_dependabot -c "import platformio_dependabot.__main__, platformio_dependabot.platformio"
