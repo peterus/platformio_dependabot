@@ -15,5 +15,5 @@ inputs:
     required: false
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  image: 'docker://ghcr.io/peterus/platformio_dependabot:v1.4.0'
   entrypoint: "/app/entrypoint.sh"
