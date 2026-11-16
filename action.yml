@@ -8,13 +8,9 @@ inputs:
     description: 'Who to assign the pull request'
     required: false
   project_path:
-    description: 'Path to PlatformIO Project. Default: current root dir'
+    description: 'Path to the PlatformIO project (directory containing platformio.ini), relative to the repository root. Default: repository root'
     required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.github_token }}
-    - ${{ inputs.assignee }}
-    - ${{ inputs.project_path }}
   entrypoint: "/app/entrypoint.sh"

@@ -33,32 +33,35 @@ def get_outdated_libraries(project_path: Path) -> List[PackageDefinition]:
         packages.append(PackageDefinition(candidate.pkg.metadata.name,
                         candidate.outdated.wanted, candidate.outdated.latest, f"{candidate.spec.requirements}"))
 
-    def remove_duplicates(duplicate_list: List[PackageDefinition]) -> List[PackageDefinition]:
-        return list(set(duplicate_list))
-
-    return remove_duplicates(packages)
+    # remove duplicates, keep a stable order so PRs are created in the same order every run
+    return sorted(set(packages), key=lambda p: (p.name.lower(), p.requirements, p.latestVersion))
 
 
 def update_ini_file(iniFile: Path, package: PackageDefinition) -> bool:
-    updated = False
-    data = ""
-
-    matches = re.search(r"^\s*([\^~<>=]*)\s*(.+)\s*$", package.requirements)
+    matches = re.search(r"^\s*([\^~<>=]*)\s*(.+?)\s*$", package.requirements)
+    if not matches:
+        return False
     operator = matches.group(1)
     requiredVersion = matches.group(2)
 
-    eName = re.escape(f"{package.name}")
-    eOperator = re.escape(f"{operator}")
-    eRequiredVersion = re.escape(f"{requiredVersion}")
+    eName = re.escape(package.name)
+    eOperator = re.escape(operator)
+    eRequiredVersion = re.escape(requiredVersion)
+
+    # the name must not be the tail of another name (e.g. "MyArduinoJson" for "ArduinoJson"),
+    # an owner prefix like "bblanchon/ArduinoJson" is fine
+    pattern = rf"(?<![\w.\-]){eName}(\s*)@(\s*){eOperator}(\s*){eRequiredVersion}(?![\w.\-+])"
 
     with open(iniFile, "rt") as f:
         data = f.read()
-        matches = re.findall(rf"({eName}(\s*)@(\s*){eOperator}(\s*){eRequiredVersion})", data)
 
-        for matched, space1, space2, space3 in matches:
-            updated = True
-            data = data.replace(matched, f"{package.name}{space1}@{space2}{operator}{space3}{package.latestVersion}")
-    with open(iniFile, "wt") as f:
-        f.write(data)
+    data, count = re.subn(
+        pattern,
+        lambda m: f"{package.name}{m.group(1)}@{m.group(2)}{operator}{m.group(3)}{package.latestVersion}",
+        data)
 
-    return updated
+    if count:
+        with open(iniFile, "wt") as f:
+            f.write(data)
+
+    return count > 0
