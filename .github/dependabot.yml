@@ -4,9 +4,22 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    groups:
+      python-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    ignore:
+      # Python minor upgrades must be checked against the PlatformIO platforms (e.g. espressif32)
+      - dependency-name: "python"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]

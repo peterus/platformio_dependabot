@@ -56,13 +56,13 @@ class ArgumentParser:
         github_repo_path = os.environ.get('GITHUB_REPOSITORY', None)
         if self.args.github_repo_path:
             github_repo_path = self.args.github_repo_path
-        if github_repo_path == None:
+        if github_repo_path is None:
             die("Must set Github Repository")
 
         github_token = os.environ.get('INPUT_GITHUB_TOKEN', None)
         if self.args.github_token:
             github_token = self.args.github_token
-        if github_token == None:
+        if github_token is None:
             die("Must set Github Token")
 
         assignee = os.environ.get('INPUT_ASSIGNEE', None)
