@@ -24,7 +24,7 @@ jobs:
       contents: read
       packages: write
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         ref: ${{ env.TAG_NAME }}
 
@@ -60,7 +60,7 @@ jobs:
     permissions:
       contents: write
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Update the ${{ env.TAG_NAME }} tag
       id: update-major-tag
