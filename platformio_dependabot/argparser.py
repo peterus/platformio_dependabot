@@ -12,6 +12,7 @@ class Configuration:
     github_repo_path: str
     github_token: str
     assignee: str
+    base_branch: str
 
 
 class ArgumentParser:
@@ -40,6 +41,7 @@ class ArgumentParser:
         self.parser.add_argument('--github_repo_path', required=False, default=None)
         self.parser.add_argument('--github_token', required=False, default=None)
         self.parser.add_argument('--assignee', required=False, default=None)
+        self.parser.add_argument('--base_branch', required=False, default=None)
 
     def parse_args(self, args) -> Configuration:
         from . import die
@@ -69,4 +71,8 @@ class ArgumentParser:
         if self.args.assignee:
             assignee = self.args.assignee
 
-        return Configuration(project_path, platformio_ini, github_repo_path, github_token, assignee)
+        base_branch = os.environ.get('INPUT_BASE_BRANCH', None) or None
+        if self.args.base_branch:
+            base_branch = self.args.base_branch
+
+        return Configuration(project_path, platformio_ini, github_repo_path, github_token, assignee, base_branch)

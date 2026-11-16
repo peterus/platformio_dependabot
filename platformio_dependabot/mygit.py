@@ -21,6 +21,16 @@ def get_current_ref(repo: Repo) -> str:
     return repo.active_branch.name
 
 
+def checkout_remote_branch(repo: Repo, branch_name: str) -> str:
+    """Fetch the branch from origin and check it out detached; returns the commit sha."""
+    fetch_args = ["origin", f"+refs/heads/{branch_name}:refs/remotes/origin/{branch_name}"]
+    if repo.git.rev_parse("--is-shallow-repository") == "true":
+        fetch_args.insert(0, "--depth=1")
+    repo.git.fetch(*fetch_args)
+    repo.git.checkout("-f", "--detach", f"origin/{branch_name}")
+    return repo.head.commit.hexsha
+
+
 def create_branch(repo: Repo, branch_name: str):
     repo.git.checkout("-b", branch_name)
 

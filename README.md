@@ -9,6 +9,7 @@ It will help to stay on the current platform and library releases.
 | ------------- | --------------------------------------- | ---------------------------------------- |--------- |
 | github_token  | Github Token to create the MR           | Secure String                            | Yes      |
 | assignee      | MR will be assigned to this Github user | User String                              | No       |
+| base_branch   | Branch the updates are based on and the pull requests are opened against (default: the repository's default branch) | Branch name | No       |
 | project_path  | Directory containing `platformio.ini`, relative to the repository root (default: repository root) | Path inside repository | No       |
 
 ## Example Usage
@@ -44,7 +45,7 @@ jobs:
 
 ## Repository settings
 
-* Pull requests are opened against the repository's **default branch**.
+* Pull requests are opened against `base_branch` (default: the repository's **default branch**).
 * Under *Settings → Actions → General → Workflow permissions* enable
   **"Allow GitHub Actions to create and approve pull requests"**. Without it the branch is pushed,
   but opening the pull request fails.
@@ -54,6 +55,8 @@ jobs:
 
 ## Behaviour
 
+* The update branches are always created from the latest `base_branch` on GitHub, no matter which
+  branch the workflow was started on.
 * For every outdated library or platform a branch `platformio_dependabot/<name>/<version>` is pushed
   and a pull request is opened. If that branch already exists, the package is skipped.
 * If updating a single package fails, the remaining packages are still processed and the
