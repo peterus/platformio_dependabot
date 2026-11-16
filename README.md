@@ -59,5 +59,8 @@ jobs:
   branch the workflow was started on.
 * For every outdated library or platform a branch `platformio_dependabot/<name>/<version>` is pushed
   and a pull request is opened. If that branch already exists, the package is skipped.
+* Open update pull requests are closed (and their branch deleted) when a newer version of the same
+  package gets its own pull request, or when the package is no longer outdated on `base_branch`.
+  If you close the pull request for the newer version by hand, the older one is left open.
 * If updating a single package fails, the remaining packages are still processed and the
   workflow run fails at the end.

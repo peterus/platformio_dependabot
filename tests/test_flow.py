@@ -94,3 +94,57 @@ def test_failure_continues_and_leaves_clean_tree(tmp_path, remote):
     assert failed == ["ArduinoJson"]
     assert git(work, "status", "--porcelain") == ""
     assert "^2.0.0" in git(remote, "show", "platformio_dependabot/Other/2.0.0:platformio.ini")
+
+
+def _pr(number, ref, full_name="o/r"):
+    pr = mock.MagicMock(number=number)
+    pr.head.ref = ref
+    pr.head.repo.full_name = full_name
+    return pr
+
+
+def test_close_outdated_pull_requests():
+    github_repo = mock.MagicMock(full_name="o/r")
+    old = _pr(1, "platformio_dependabot/ArduinoJson/7.0.0")
+    current = _pr(2, BRANCH)
+    up_to_date = _pr(3, "platformio_dependabot/Gone/1.0.0")
+    failed_pkg = _pr(4, "platformio_dependabot/Broken/1.0.0")
+    fork = _pr(5, "platformio_dependabot/Gone/0.9.0", full_name="someone/fork")
+    manual = _pr(6, "feature/x")
+    github_repo.get_pulls.return_value = [old, current, up_to_date, failed_pkg, fork, manual]
+    broken = PackageDefinition("Broken", "1.0.0", "2.0.0", "^1.0.0")
+
+    failed = app.close_outdated_pull_requests(github_repo, "main", [ARDUINOJSON, broken], {}, {"Broken"})
+
+    assert failed == []
+    old.create_issue_comment.assert_called_once_with("Superseded by #2.")
+    old.edit.assert_called_once_with(state="closed")
+    up_to_date.edit.assert_called_once_with(state="closed")
+    assert "up to date" in up_to_date.create_issue_comment.call_args.args[0]
+    for pr in (current, failed_pkg, fork, manual):
+        pr.edit.assert_not_called()
+    deleted = [c.args[0] for c in github_repo.get_git_ref.call_args_list]
+    assert deleted == ["heads/platformio_dependabot/ArduinoJson/7.0.0", "heads/platformio_dependabot/Gone/1.0.0"]
+
+
+def test_keep_old_pull_request_if_newer_one_was_closed_by_hand():
+    github_repo = mock.MagicMock(full_name="o/r")
+    old = _pr(1, "platformio_dependabot/ArduinoJson/7.0.0")
+    github_repo.get_pulls.return_value = [old]
+
+    assert app.close_outdated_pull_requests(github_repo, "main", [ARDUINOJSON], {}, set()) == []
+    old.edit.assert_not_called()
+
+
+def test_new_pull_request_supersedes_old_one_in_same_run(tmp_path, remote):
+    work = clone(tmp_path, remote, "main")
+    config = Configuration(str(work), str(work / "platformio.ini"), "o/r", "token", None, "main")
+    github_repo = mock.MagicMock(full_name="o/r")
+    github_repo.get_branch.side_effect = UnknownObjectException(404, {}, {})
+    old = _pr(1, "platformio_dependabot/ArduinoJson/7.0.0")
+    github_repo.get_pulls.return_value = [old]  # API does not list the new PR yet
+    github_repo.create_pull.return_value = mock.MagicMock(number=7)
+    with mock.patch.object(app, "install_libraries"), \
+            mock.patch.object(app, "get_outdated_libraries", return_value=[ARDUINOJSON]):
+        assert app.update_packages(config, github_repo, Repo(work), "main") == []
+    old.create_issue_comment.assert_called_once_with("Superseded by #7.")

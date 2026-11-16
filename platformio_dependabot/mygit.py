@@ -7,6 +7,33 @@ from github import UnknownObjectException
 from platformio_dependabot.platformio import PackageDefinition
 
 
+BRANCH_PREFIX = "platformio_dependabot/"
+
+
+def package_key(package: PackageDefinition) -> str:
+    return package.name.replace(" ", "_")
+
+
+def get_branch_name(package: PackageDefinition) -> str:
+    return f"{BRANCH_PREFIX}{package_key(package)}/{package.latestVersion}".replace(" ", "_")
+
+
+def get_open_update_pull_requests(github_repo: Any, base_branch: str) -> list:
+    return [pr for pr in github_repo.get_pulls(state="open", base=base_branch)
+            if pr.head.ref.startswith(BRANCH_PREFIX)
+            and pr.head.repo is not None and pr.head.repo.full_name == github_repo.full_name]
+
+
+def get_package_key_of_branch(branch_name: str) -> str:
+    return branch_name[len(BRANCH_PREFIX):].rsplit("/", 1)[0]
+
+
+def close_pull_request(github_repo: Any, pr: Any, comment: str):
+    pr.create_issue_comment(comment)
+    pr.edit(state="closed")
+    github_repo.get_git_ref(f"heads/{pr.head.ref}").delete()
+
+
 def is_branch_existing_on_github(github_repo: Any, branch_name: str) -> bool:
     try:
         github_repo.get_branch(branch_name)
@@ -51,3 +78,4 @@ def create_pull_request(github_repo: Any, branch_name: str, base_branch: str, pa
     pr = github_repo.create_pull(title=body, body=body, head=branch_name, base=base_branch)
     if assignee:
         pr.add_to_assignees(assignee)
+    return pr
